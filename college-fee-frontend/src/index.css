@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-srinathRed text-white font-poppins;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #a52a2a33;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b22222;
+  border-radius: 4px;
+}
