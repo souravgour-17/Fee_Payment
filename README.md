@@ -33,7 +33,7 @@ A modern **web application** for students to securely view and pay college fees 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/college_fee_payment.git
+   git clone https://github.com/souravgour-17/college_fee_payment.git
    cd college_fee_payment
 
 2. **Install backend dependencies**
@@ -77,10 +77,6 @@ Push to the branch (git push origin feature/YourFeature)
 
 Open a pull request
 
-📄 License
-
-This project is licensed under the MIT License – see the LICENSE
- file for details.
 
 📬 Contact
 
