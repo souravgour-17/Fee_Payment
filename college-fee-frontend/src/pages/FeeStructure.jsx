@@ -1,15 +1,15 @@
 export default function FeeStructure() {
   return (
-    <div className="text-black">
+    <div className="text-white">
       <h1 className="text-4xl font-bold mb-6">📊 Fee Structure</h1>
       <p className="text-lg mb-4">
-        Detailed fee structure for major courses at Srinath University.
+        Detailed fee structure for major courses at Souravian University.
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-300 text-gray-800 shadow-lg rounded-lg">
           <thead>
-            <tr className="bg-srinathRed text-white">
+            <tr className=" text-white">
               <th className="px-4 py-3 border">Course</th>
               <th className="px-4 py-3 border">Tuition Fee</th>
               <th className="px-4 py-3 border">Other Fees</th>

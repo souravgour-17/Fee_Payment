@@ -1,36 +1,39 @@
-// backend/routes/paymentRoutes.js
 import express from "express";
 import Payment from "../models/Payment.js";
 
 const router = express.Router();
 
+// GET all payments
+router.get("/", async (req, res) => {
+  try {
+    const payments = await Payment.find().populate("studentId");
+    res.json(payments);
+  } catch (err) {
+    console.error("Error fetching payments:", err.message);
+    res.status(500).json({ message: "Error fetching payments" });
+  }
+});
+
+// POST payment
 router.post("/", async (req, res) => {
   try {
-    // 👇 Add this line here
-    console.log("📩 Received payment data:", req.body);
-
-    const { studentId, enrollmentNo, name, course, amount, method, status } = req.body;
-
-    if (!studentId || !amount || !method) {
-      return res.status(400).json({ message: "❌ Missing required fields" });
-    }
+    const { studentId, amount, method, status } = req.body;
+    if (!studentId || !amount || !method)
+      return res.status(400).json({ message: "Missing fields" });
 
     const payment = new Payment({
       studentId,
-      enrollmentNo,
-      name,
-      course,
       amount,
       method,
-      status: status || "SUCCESS",
+      status: status || "Success",
       transactionId: "TXN" + Date.now(),
     });
 
     await payment.save();
-    res.json({ message: "✅ Payment logged successfully", payment });
+    res.json({ message: "Payment saved", payment });
   } catch (err) {
-    console.error("❌ Error logging payment:", err.message);
-    res.status(500).json({ message: "❌ Backend rejected the payment log" });
+    console.error(err);
+    res.status(500).json({ message: "Error logging payment" });
   }
 });
 

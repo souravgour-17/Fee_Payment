@@ -1,11 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-srinathRed text-white font-poppins;
+@layer base {
+  body {
+    @apply bg-gradient-to-b from-black via-purple-900 to-black text-white font-poppins;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
 }
-
+Scrollbar
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -17,4 +24,71 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: #b22222;
   border-radius: 4px;
+}
+
+/* Dark Veil Effect: rich gradients, subtle noise, scanlines, vignette */
+.veil-gradient {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(128, 0, 255, 0.2), transparent 60%),
+    radial-gradient(circle at 70% 80%, rgba(0, 200, 255, 0.15), transparent 60%);
+  filter: blur(20px) saturate(1.2) contrast(1.05);
+  animation: gradientMove 14s ease-in-out infinite alternate, hueShift 30s linear infinite;
+}
+
+@keyframes gradientMove {
+  0% { transform: translate(-5%, -5%) scale(1.05); }
+  100% { transform: translate(5%, 5%) scale(1.1); }
+}
+
+@keyframes hueShift {
+  0% { filter: hue-rotate(0deg) blur(20px) saturate(1.2) contrast(1.05); }
+  100% { filter: hue-rotate(360deg) blur(20px) saturate(1.2) contrast(1.05); }
+}
+
+.veil-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  animation: scanlineMove 8s linear infinite;
+}
+
+@keyframes scanlineMove {
+  from { background-position-y: 0; }
+  to { background-position-y: 200px; }
+}
+
+.veil-noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9ImJsYWNrIiBvcGFjaXR5PSIuMDUiIC8+PC9zdmc+");
+  opacity: 0.1;
+  mix-blend-mode: overlay;
+  animation: noiseAnim 3s steps(10) infinite;
+}
+
+@keyframes noiseAnim {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.14; }
+}
+
+.veil-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+  pointer-events: none;
 }

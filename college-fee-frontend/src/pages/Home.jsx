@@ -32,7 +32,7 @@ export default function Home() {
       {/* Hero Section */}
       <section
         className="relative h-screen w-full flex flex-col justify-center items-center bg-cover bg-center"
-        style={{ backgroundImage: "url('https://srinathuniversity.ac.in/wp-content/uploads/2023/07/Website-Slider-scaled.jpg')" }}
+        style={{ backgroundImage: "url('https://i.pinimg.com/736x/63/0d/68/630d68f85a0152e6f5c9833ac7f3fc1b.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/40"></div>
         <motion.h1
@@ -41,7 +41,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          Srinath University
+          Souravian University
         </motion.h1>
         <motion.p
           className="text-white/80 text-lg sm:text-xl mt-4 z-10 text-center max-w-2xl px-4"
@@ -64,7 +64,7 @@ export default function Home() {
       <section className="py-20 bg-gray-50 relative z-10">
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-10">
           <motion.img
-            src="https://srinathuniversity.ac.in/wp-content/uploads/2025/02/about_img_1new.jpg"
+            src="https://i.pinimg.com/1200x/37/b0/03/37b003811276655d429e53d17c2c6b05.jpg"
             alt="Campus"
             className="w-full md:w-1/2 rounded-2xl shadow-lg"
             initial={{ opacity: 0, x: -50 }}
@@ -82,7 +82,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold mb-4 text-black">Overview & History</h2>
 
             <p className="text-gray-700 mb-4">
-              Established with a vision to deliver world-class education, Srinath University has emerged as a center of academic excellence. With a focus on innovation, research, and holistic development, the university equips students to thrive in a global environment.
+              Established with a vision to deliver world-class education, Soravian University has emerged as a center of academic excellence. With a focus on innovation, research, and holistic development, the university equips students to thrive in a global environment.
             </p>
             <p className="text-gray-700">
               Our campus boasts modern classrooms, advanced laboratories, extensive library resources, and vibrant extracurricular opportunities, creating an inspiring environment for learning and growth.
@@ -97,11 +97,11 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-10">Campus Life & Highlights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[
-              "https://srinathuniversity.ac.in/wp-content/uploads/2025/02/about_img_1new.jpg",
-              "https://srinathuniversity.ac.in/wp-content/uploads/2025/02/about_img_1new.jpg",
-              "https://srinathuniversity.ac.in/wp-content/uploads/2025/02/srinath-university-05new.jpg",
-              "https://srinathuniversity.ac.in/wp-content/uploads/2025/02/srinath-university-03new.jpg",
-              "https://srinathuniversity.ac.in/wp-content/uploads/2025/02/srinath-university-04new.jpg"
+              "https://i.pinimg.com/736x/52/50/ab/5250ab493ee9553d8033352359adc3f1.jpg",
+              "https://i.pinimg.com/736x/18/d1/4d/18d14dcfa2d2dbbbc927e6ba6f239570.jpg",
+              "https://i.pinimg.com/736x/64/77/b0/6477b0b9713964798332982278484f26.jpg",
+              "https://i.pinimg.com/736x/6b/70/b6/6b70b612a8c63a2e88bf38bc4707e468.jpg",
+              "https://i.pinimg.com/1200x/48/bb/b7/48bbb7b022c39fd35563e36cea76101c.jpg"
             ].map((url, i) => (
               <motion.div
                 key={i}
@@ -127,7 +127,7 @@ export default function Home() {
           viewport={{ once: true }}
           transition={{ duration: 1 }}
         >
-          Join Srinath University Today
+          Join Souravian University Today
         </motion.h2>
         <motion.p
           className="text-lg sm:text-xl max-w-2xl mx-auto mb-8"

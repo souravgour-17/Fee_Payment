@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 export default {
   content: [
     "./index.html",
@@ -7,9 +7,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        srinathRed: "#800000",
-        srinathLightRed: "#A52A2A",
-        srinathAccent: "#B22222",
+        souravianDarkBlue: "#0D1B2A",
+        souravianPurple: "#5A189A",
+        souravianLightPurple: "#9D4EDD",
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

@@ -1,17 +1,18 @@
-# 🎓 College Fee Payment System
+# 🎓 Souravian University - College Fee Payment System
 
 ![GitHub stars](https://img.shields.io/github/stars/yourusername/college_fee_payment?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/yourusername/college_fee_payment?style=social)
 ![GitHub issues](https://img.shields.io/github/issues/yourusername/college_fee_payment?color=red&style=flat-square)
 ![GitHub license](https://img.shields.io/github/license/yourusername/college_fee_payment)
 
-A modern **web application** for students to securely view and pay college fees online. Streamlines the fee payment process with a responsive and user-friendly interface.  
+A modern **web application** for students of **Souravian University** to securely view and pay college fees online. Streamlines the fee payment process with a responsive and user-friendly interface.  
 
-
+---
 
 ## ✨ Features
 
-- ✅ Student registration & login  
+- ✅ Student registration & login with **JWT authentication**  
+- ✅ Secure login; authenticated users stored in MongoDB  
 - ✅ View fee details & payment history  
 - ✅ Online fee payments  
 - ✅ Admin panel to manage students & payments  
@@ -35,38 +36,52 @@ A modern **web application** for students to securely view and pay college fees 
    ```bash
    git clone https://github.com/souravgour-17/college_fee_payment.git
    cd college_fee_payment
+Install backend dependencies
 
-2. **Install backend dependencies**
+bash
+Copy code
 cd backend
 npm install
+Install frontend dependencies
 
-
-3. **Install frontend dependencies**
-
+bash
+Copy code
 cd ../frontend
 npm install
-
-
-4. **Configure environment variables**
+Configure environment variables
 Create a .env file in backend:
 
+env
+Copy code
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
+Run the project
 
+Backend
 
-5. **Run the project**
-
-# Backend
+bash
+Copy code
 cd backend
 npm run dev
+Frontend
 
-# Frontend
+bash
+Copy code
 cd ../frontend
 npm start
+🔒 Authentication Flow
+Students register or login using email/password.
+
+Upon login, a JWT token is generated and stored in the client (localStorage or cookies).
+
+The token is sent with requests to access protected routes (like viewing payment history).
+
+Only authenticated users can access fee details and payment history.
+
+User data is saved securely in MongoDB.
 
 🤝 Contributing
-
 Fork the project
 
 Create a feature branch (git checkout -b feature/YourFeature)
@@ -77,15 +92,10 @@ Push to the branch (git push origin feature/YourFeature)
 
 Open a pull request
 
-
 📬 Contact
-
 Developer: Sourav Gour
-
 Email: souravgour798@gmail.com
+GitHub: souravgour-17
+LinkedIn: Sourav Gour
 
-GitHub: https://github.com/souravgour-17
-
-LinkedIn: https://www.linkedin.com/in/sourav-gour-0574932a9/
-
-Made with ❤️ using React, Node.js, and MongoDB
+Made with ❤️ using React, Node.js, MongoDB, and JWT authentication.

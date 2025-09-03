@@ -6,33 +6,40 @@ function StudentList() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/students") // ✅ adjust port
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch students");
-        return res.json();
-      })
-      .then((data) => {
-        // ✅ if backend sends {students: [...]}, handle both cases
-        const list = Array.isArray(data) ? data : data.students || [];
-        const sorted = list.sort((a, b) =>
-          String(a.enrollment).localeCompare(String(b.enrollment))
-        );
-        setStudents(sorted);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching students:", err);
-        setError(err.message);
-        setLoading(false);
+  const fetchStudents = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/students", {
+        credentials: "include", // send cookies
       });
-  }, []);
+      if (!res.ok) throw new Error("Failed to fetch students");
+      const data = await res.json();
+
+      const studentList = Array.isArray(data) ? data : data.students || [];
+
+      // Sort ascending by enrollment
+      studentList.sort((a, b) =>
+        String(a.enrollment).localeCompare(String(b.enrollment))
+      );
+
+      setStudents(studentList);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchStudents();
+}, []);
+
+
 
   if (loading) return <div className="p-6">Loading students...</div>;
   if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
 
   return (
     <div className="p-6 text-black">
-      <h1 className="text-2xl font-bold mb-4">🎓 Student List</h1>
+      <h1 className="text-white 2xl font-bold mb-4">🎓 Student List</h1>
       {students.length === 0 ? (
         <p>No students found.</p>
       ) : (

@@ -5,12 +5,20 @@ export default function PaymentPortal() {
   const [enrollment, setEnrollment] = useState("");
   const [student, setStudent] = useState(null);
   const [error, setError] = useState("");
-  const [status, setStatus] = useState(""); // ✅ Transaction feedback
+  const [status, setStatus] = useState(""); // Transaction feedback
 
   // Search student
   const handleSearch = async () => {
+    if (!enrollment) {
+      setError("❌ Please enter enrollment number");
+      setStudent(null);
+      return;
+    }
+
     try {
-      const res = await fetch(`http://localhost:5000/api/students/${enrollment}`);
+      const res = await fetch(`http://localhost:5000/api/students/${enrollment}`, {
+        credentials: "include",
+      });
       if (!res.ok) {
         setStudent(null);
         setError("❌ Student not found");
@@ -39,51 +47,28 @@ export default function PaymentPortal() {
     if (!student) return;
 
     try {
-      console.log("➡️ Sending payment log request...");
-
       const paymentBody = {
-        studentId: student._id || "UNKNOWN_ID",
-        enrollmentNo: student.enrollmentNo || "UNKNOWN_ENROLL",
-        name: student.name || "Unnamed",
+        studentId: student._id,
+        enrollmentNo: student.enrollment,
+        name: student.name,
         course: student.course || "N/A",
         amount: student.feesDue || 0,
         method: "UPI",
         status: "Success",
       };
 
-      console.log("📦 Payment request body:", paymentBody);
-
       const res = await fetch("http://localhost:5000/api/payments", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    studentId: student._id,   // ✅ must exist
-    enrollmentNo: student.enrollmentNo,
-    name: student.name,
-    course: student.course,
-    amount: student.feesDue,  // ✅ number
-    method: "UPI",
-    status: "Success",
-  }),
-});
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(paymentBody),
+        credentials: "include",
+      });
 
-      console.log("📡 Payment API status:", res.status);
-
-      let data = null;
-      try {
-        data = await res.json();
-      } catch {
-        console.warn("⚠️ Response was not valid JSON");
-      }
-      console.log("📦 Payment API response data:", data);
-
-      if (!res.ok) {
-        throw new Error(data?.message || "❌ Backend rejected the payment log");
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "❌ Backend rejected the payment");
 
       setStatus("✅ Payment request logged. Redirecting to UPI app...");
 
-      // Step 2: Redirect to UPI app
       setTimeout(() => {
         window.location.href = generateUpiLink();
       }, 1000);
@@ -100,7 +85,8 @@ export default function PaymentPortal() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      <h1 className="text-3xl font-bold mb-6">💳 Payment Portal</h1>
+      <h1 className="text-3xl font-bold mb-6 text-white">💳 Payment Portal</h1>
+
 
       {/* Search Section */}
       <div className="flex gap-2 mb-6">
@@ -150,20 +136,20 @@ export default function PaymentPortal() {
             exit={{ opacity: 0, y: 50 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-xl font-bold">{student.name}</h2>
-            <p>
-              <strong>Enrollment:</strong> {student.enrollmentNo}
+            <h2 className="text-black font-bold">{student.name}</h2>
+            <p className="text-black">
+              <strong>Enrollment:</strong> {student.enrollment}
             </p>
-            <p>
+            <p className="text-black">
               <strong>Course:</strong> {student.course || "N/A"}
             </p>
-            <p>
+            <p className="text-black">
               <strong>Year:</strong> {student.year || "N/A"}
             </p>
-            <p className="text-red-700 font-semibold">
+            <p className="text-red-600 font-semibold">
               Fees Due: ₹{student.feesDue || 0}
             </p>
-            <p>
+            <p className="text-black">
               <strong>UPI ID:</strong> {student.upiId || "test@upi"}
             </p>
 
@@ -198,9 +184,7 @@ export default function PaymentPortal() {
               {status && (
                 <motion.p
                   key="status"
-                  className={`mt-3 font-medium ${
-                    status.startsWith("✅") ? "text-green-600" : "text-red-600"
-                  }`}
+                  className="mt-3 font-medium text-black"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
