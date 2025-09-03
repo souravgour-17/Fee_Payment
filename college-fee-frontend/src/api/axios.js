@@ -3,10 +3,11 @@ import axios from "axios";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // 👈 change to your backend URL
+  baseURL: "https://souravian-university.onrender.com/api", // ✅ updated to Render backend
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // ✅ include cookies if your backend uses them
 });
 
 // Automatically attach JWT token if available
