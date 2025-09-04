@@ -1,16 +1,11 @@
-// src/api/axios.js
 import axios from "axios";
 
-// Create axios instance
 const api = axios.create({
-  baseURL: "https://souravian-university.onrender.com", //   http://localhost:5000/api
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true, // ✅ include cookies if your backend uses them
+  baseURL: "https://souravian-university.onrender.com/api",
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
-// Automatically attach JWT token if available
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {

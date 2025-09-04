@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
 import Home from "./pages/Home";
@@ -17,28 +17,34 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Checking session...</div>;
+  }
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         {/* Public Routes */}
-        {!user && <Route path="/login" element={<AuthPage />} />}
-        {!user && <Route path="/register" element={<AuthPage />} />} 
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/" replace /> : <AuthPage />}
+        />
+        <Route
+          path="/register"
+          element={user ? <Navigate to="/" replace /> : <AuthPage />}
+        />
 
         {/* Protected Routes */}
-        {user && (
-          <>
-            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
-            <Route path="/fee-structure" element={<ProtectedRoute><FeeStructure /></ProtectedRoute>} />
-            <Route path="/payment-portal" element={<ProtectedRoute><PaymentPortal /></ProtectedRoute>} />
-            <Route path="/students" element={<ProtectedRoute><StudentList /></ProtectedRoute>} />
-            <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
-          </>
-        )}
+        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+        <Route path="/fee-structure" element={<ProtectedRoute><FeeStructure /></ProtectedRoute>} />
+        <Route path="/payment-portal" element={<ProtectedRoute><PaymentPortal /></ProtectedRoute>} />
+        <Route path="/students" element={<ProtectedRoute><StudentList /></ProtectedRoute>} />
+        <Route path="/payment-history" element={<ProtectedRoute><PaymentHistory /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={user ? <Home /> : <AuthPage />} />
@@ -60,12 +66,22 @@ function Layout() {
         <span className="italic text-sm mb-6">Fee Portal</span>
 
         <nav className="flex flex-col gap-3 flex-grow">
-          {[{ to: "/", label: "Home" }, { to: "/about", label: "About" }, { to: "/fee-structure", label: "Fee Structure" }, { to: "/payment-portal", label: "Payment Portal" }, { to: "/students", label: "All Students" }, { to: "/payment-history", label: "Payment History" }, { to: "/contact", label: "Contact" }].map(item => (
+          {[
+            { to: "/", label: "Home" },
+            { to: "/about", label: "About" },
+            { to: "/fee-structure", label: "Fee Structure" },
+            { to: "/payment-portal", label: "Payment Portal" },
+            { to: "/students", label: "All Students" },
+            { to: "/payment-history", label: "Payment History" },
+            { to: "/contact", label: "Contact" },
+          ].map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `py-2 px-4 rounded transition ${isActive ? "bg-srinathAccent font-bold" : "hover:bg-srinathAccent"}`
+                `py-2 px-4 rounded transition ${
+                  isActive ? "bg-srinathAccent font-bold" : "hover:bg-srinathAccent"
+                }`
               }
             >
               {item.label}
@@ -73,7 +89,10 @@ function Layout() {
           ))}
         </nav>
 
-        <button onClick={logout} className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded">
+        <button
+          onClick={logout}
+          className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-2 rounded"
+        >
           Logout
         </button>
       </aside>
