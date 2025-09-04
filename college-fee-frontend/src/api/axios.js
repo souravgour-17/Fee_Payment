@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: "https://souravian-university.onrender.com/api", // ✅ updated to Render backend
+  baseURL: "https://souravian-university.onrender.com/api", //   http://localhost:5000/api
   headers: {
     "Content-Type": "application/json",
   },
