@@ -19,7 +19,10 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: " https://souravian-university.netlify.app", //  http://localhost:5173
+    origin: [
+      "http://localhost:5173",                        
+      "https://souravian-university.netlify.app"      
+    ],
     credentials: true,
   })
 );
