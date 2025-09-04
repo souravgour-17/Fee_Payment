@@ -61,9 +61,9 @@ function Layout() {
   return (
     <div className="flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-red-900 text-white p-6 h-screen fixed top-0 left-0 flex flex-col shadow-lg">
-        <h1 className="text-3xl font-bold mb-2">souravian Univ.</h1>
-        <span className="italic text-sm mb-6">Fee Portal</span>
+     <aside className="w-64 bg-gradient-to-b from-souravianPurple to-blue-400 text-white p-6 h-screen fixed top-0 left-0 flex flex-col shadow-lg">
+  <h1 className="text-3xl font-bold mb-2">souravian Univ.</h1>
+  <span className="italic text-sm mb-6">Fee Portal</span>
 
         <nav className="flex flex-col gap-3 flex-grow">
           {[
@@ -76,16 +76,17 @@ function Layout() {
             { to: "/contact", label: "Contact" },
           ].map((item) => (
             <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `py-2 px-4 rounded transition ${
-                  isActive ? "bg-srinathAccent font-bold" : "hover:bg-srinathAccent"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
+  key={item.to}
+  to={item.to}
+  className={({ isActive }) =>
+    `py-2 px-4 rounded transition ${
+      isActive ? "bg-souravianPurple font-bold" : "hover:bg-souravianPurple"
+    }`
+  }
+>
+  {item.label}
+</NavLink>
+
           ))}
         </nav>
 
