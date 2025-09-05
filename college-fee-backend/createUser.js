@@ -10,7 +10,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/mydb")
   .catch(err => console.log(err));
 
 const createUser = async () => {
-  const hashedPassword = await bcrypt.hash("1727", 10); // tumhara password
+  const hashedPassword = await bcrypt.hash("1727", 10); 
   const user = new User({
     name: "Sourav",
     email: "souravgour798@gmail.com",
