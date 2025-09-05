@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios"; // ✅ import axios instance
 
 export default function SearchStudent() {
   const [enrollment, setEnrollment] = useState("");
@@ -16,19 +17,17 @@ export default function SearchStudent() {
     setLoading(true);
 
     try {
-      const BASE_URL = "http://localhost:5000";
-      const res = await fetch(
-        `${BASE_URL}/api/students/${encodeURIComponent(enrollment)}`
-      );
+      // ✅ Use axios instance (baseURL handled automatically)
+      const res = await api.get(`/students/${encodeURIComponent(enrollment)}`);
 
-      if (!res.ok) {
+      if (!res.data) {
         throw new Error("Student not found.");
       }
 
       // ✅ If student exists, navigate to their overview page
       navigate(`/student/${encodeURIComponent(enrollment)}`);
     } catch (err) {
-      alert(err.message);
+      alert(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }

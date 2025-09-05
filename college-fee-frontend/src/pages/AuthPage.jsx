@@ -1,4 +1,3 @@
-// src/pages/AuthPage.jsx
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +14,6 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Agar user already login hai toh redirect to home
   useEffect(() => {
     if (user) navigate("/");
   }, [user, navigate]);
@@ -38,23 +36,24 @@ export default function AuthPage() {
       setLoading(true);
       const endpoint = isRegister ? "/register" : "/login";
 
-      const res = await fetch(`http://localhost:5000/api/auth${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name: email }),
-        credentials: "include", // ✅ important for cookies
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth${endpoint}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name: email }),
+          credentials: "include",
+        }
+      );
 
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Auth failed");
 
       if (!isRegister) {
-        // Login ke baad user set karo context me
         setUser(data.user);
-        navigate("/"); // redirect home
+        navigate("/");
       } else {
-        // Register ke baad login tab karne ke liye Sign In pe switch
         setIsRegister(false);
       }
     } catch (err) {
@@ -69,19 +68,13 @@ export default function AuthPage() {
       <div className="relative w-full max-w-md h-[620px] rounded-2xl overflow-hidden shadow-2xl">
         <div className="relative z-10 h-full p-6 sm:p-8">
           <div className="w-full h-full rounded-2xl border border-white/20 bg-transparent px-6 py-6 flex flex-col">
-            {/* Logo + Title */}
             <div className="flex flex-col items-center mb-6">
-              <img
-                src={logo}
-                alt="Logo"
-                className="w-20 h-20 rounded-full mb-2 border border-white/30"
-              />
+              <img src={logo} alt="Logo" className="w-20 h-20 rounded-full mb-2 border border-white/30" />
               <h1 className="text-2xl font-bold text-white">
                 {isRegister ? "Create Account" : "Welcome Back"}
               </h1>
             </div>
 
-            {/* Toggle Sign In / Sign Up */}
             <div className="flex justify-around mb-6">
               <button
                 onClick={() => {
@@ -89,9 +82,7 @@ export default function AuthPage() {
                   setError("");
                 }}
                 className={`px-4 py-2 text-lg font-semibold transition ${
-                  !isRegister
-                    ? "text-white border-b-2 border-purple-400"
-                    : "text-gray-400 hover:text-white"
+                  !isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
                 }`}
               >
                 Sign In
@@ -102,55 +93,23 @@ export default function AuthPage() {
                   setError("");
                 }}
                 className={`px-4 py-2 text-lg font-semibold transition ${
-                  isRegister
-                    ? "text-white border-b-2 border-purple-400"
-                    : "text-gray-400 hover:text-white"
+                  isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
                 }`}
               >
                 Sign Up
               </button>
             </div>
 
-            {/* Error message */}
-            {error && (
-              <p className="text-red-400 text-sm mb-4 text-center">{error}</p>
-            )}
+            {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="email"
-                placeholder="Email"
-                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <input type="email" placeholder="Email" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input type="password" placeholder="Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={password} onChange={(e) => setPassword(e.target.value)} />
               {isRegister && (
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                <input type="password" placeholder="Confirm Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
               )}
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
-              >
-                {loading
-                  ? "Please wait..."
-                  : isRegister
-                  ? "Create Account"
-                  : "Login"}
+              <button type="submit" disabled={loading} className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50">
+                {loading ? "Please wait..." : isRegister ? "Create Account" : "Login"}
               </button>
             </form>
           </div>

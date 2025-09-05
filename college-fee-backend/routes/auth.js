@@ -40,22 +40,23 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
+    // ✅ Send token in httpOnly cookie (secure)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // only over https in prod
       sameSite: "strict",
       maxAge: 3600000,
     });
 
     res.json({
       message: "Login successful",
-      token, // 👈 send token for frontend axios
       user: { id: user._id, name: user.name, email },
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Logout route
 router.post("/logout", (req, res) => {
@@ -70,12 +71,10 @@ router.post("/logout", (req, res) => {
 // ✅ Me route
 router.get("/me", async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: "No token provided" });
+    const token = req.cookies.token; // ✅ read from cookie
+    if (!token) return res.status(401).json({ error: "No token provided" });
 
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const user = await User.findById(decoded.id).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
 

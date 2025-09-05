@@ -1,4 +1,3 @@
-// frontend/src/pages/PaymentHistory.jsx
 import { useEffect, useState } from "react";
 
 export default function PaymentHistory() {
@@ -8,7 +7,7 @@ export default function PaymentHistory() {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/payments", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/payments`, {
           credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to fetch payments");

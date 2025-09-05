@@ -11,11 +11,21 @@ node_modules/
 # Build output
 dist/
 build/
+.vercel/
+.netlify/
 
-# Local environment files
+# Environment files
 .env
 .env.local
+.env.development
+.env.production
+.env.test
 .env.*.local
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Editor settings
 .vscode/
