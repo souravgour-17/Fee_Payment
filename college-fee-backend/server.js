@@ -14,32 +14,51 @@ connectDB();
 
 const app = express();
 
+// ✅ Middlewares
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
-// ✅ CORS setup for frontend
+// ✅ Allowed origins (add your deployed frontend URL here)
 const allowedOrigins = [
-  process.env.FRONTEND_URL, // your deployed frontend
-  "http://localhost:5173",   // dev frontend
+  process.env.FRONTEND_URL,          // e.g. "https://fee-portal-frontend.onrender.com"
+  "http://localhost:5173",           // local dev frontend
 ].filter(Boolean);
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // for postman/curl
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("CORS not allowed: " + origin), false);
-  },
-  credentials: true, // ✅ allow cookies
-}));
+// ✅ CORS setup
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // allow Postman / curl
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.error("❌ Blocked by CORS:", origin);
+      return callback(new Error("CORS not allowed: " + origin), false);
+    },
+    credentials: true, // allow cookies
+  })
+);
+
+// ✅ Debug incoming requests
+app.use((req, res, next) => {
+  console.log(
+    "👉", req.method, req.url,
+    "| Origin:", req.headers.origin || "N/A"
+  );
+  next();
+});
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/students", verifyToken, studentRoutes);
 app.use("/api/payments", verifyToken, paymentRoutes);
 
-// Health check
+// ✅ Health check
 app.get("/health", (req, res) => res.json({ ok: true }));
 app.get("/", (req, res) => res.send("✅ API running"));
 
+// ✅ Server listen
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`🚀 Server running on port ${PORT}`)
+);
