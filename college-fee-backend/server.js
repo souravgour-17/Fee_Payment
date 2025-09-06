@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import session from "express-session";
 
 import connectDB from "./config/db.js";
 import studentRoutes from "./routes/studentRoutes.js";
@@ -18,10 +19,25 @@ const app = express();
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
-// ✅ Allowed origins (add your deployed frontend URL here)
+// ✅ Session setup
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // must be true on HTTPS
+      sameSite: "none", // important for cross-site cookies
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
+  })
+);
+
+// ✅ Allowed origins
 const allowedOrigins = [
-  process.env.FRONTEND_URL,          // e.g. "https://fee-portal-frontend.onrender.com"
-  "http://localhost:5173",           // local dev frontend
+  process.env.FRONTEND_URL,  // e.g. "https://fee-payment-frontend.onrender.com"
+  "http://localhost:5173",   // local dev frontend
 ].filter(Boolean);
 
 // ✅ CORS setup
