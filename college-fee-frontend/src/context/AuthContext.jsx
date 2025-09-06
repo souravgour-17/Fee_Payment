@@ -11,56 +11,46 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If user exists in localStorage, use it first
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setLoading(false);
-    } else {
-      const checkUser = async () => {
-        try {
-          const res = await api.get("/auth/me");
-          if (res.data.user) {
-            setUser(res.data.user);
-            localStorage.setItem("user", JSON.stringify(res.data.user));
-          } else {
-            setUser(null);
-            localStorage.removeItem("user");
-          }
-        } catch {
+    const checkUser = async () => {
+      try {
+        const res = await api.get("/auth/me"); // ✅ sends cookies
+        if (res.data.user) {
+          setUser(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        } else {
           setUser(null);
           localStorage.removeItem("user");
-        } finally {
-          setLoading(false);
         }
-      };
-      checkUser();
-    }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        setUser(null);
+        localStorage.removeItem("user");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!user) checkUser();
+    else setLoading(false);
   }, []);
 
   const login = async (email, password) => {
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      setUser(res.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      return res.data.user;
-    } catch (err) {
-      throw err;
-    }
+    const res = await api.post("/auth/login", { email, password });
+    setUser(res.data.user);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    return res.data.user;
   };
 
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-      setUser(null);
-      localStorage.removeItem("user");
-    } catch (err) {
-      console.error("Logout failed:", err);
-    }
+    } catch {}
+    setUser(null);
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

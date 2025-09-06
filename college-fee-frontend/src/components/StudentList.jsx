@@ -9,13 +9,10 @@ function StudentList() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await api.get("/students"); // automatically uses VITE_API_URL
-        const data = res.data;
-        const studentList = Array.isArray(data) ? data : data.students || [];
-        studentList.sort((a, b) =>
-          String(a.enrollment).localeCompare(String(b.enrollment))
-        );
-        setStudents(studentList);
+        const res = await api.get("/students");
+        const list = Array.isArray(res.data) ? res.data : res.data.students || [];
+        list.sort((a, b) => String(a.enrollment).localeCompare(String(b.enrollment)));
+        setStudents(list);
       } catch (err) {
         console.error("❌ Error fetching students:", err);
         setError(err.response?.data?.message || "Failed to fetch students");
@@ -23,11 +20,12 @@ function StudentList() {
         setLoading(false);
       }
     };
+
     fetchStudents();
   }, []);
 
   if (loading) return <div className="p-6 text-center text-white">⏳ Loading students...</div>;
-  if (error) return <div className="p-6 text-center text-red-600">❌ Error: {error}</div>;
+  if (error) return <div className="p-6 text-center text-red-600">❌ {error}</div>;
 
   return (
     <div className="p-4 md:p-6">
@@ -37,20 +35,20 @@ function StudentList() {
         <p className="text-gray-300">No students found.</p>
       ) : (
         <ul className="space-y-3">
-          {students.map((student) => (
-            <li key={student.enrollment} className="p-4 md:p-6 border rounded-lg bg-white shadow">
+          {students.map((s) => (
+            <li key={s.enrollment} className="p-4 md:p-6 border rounded-lg bg-white shadow">
               <span className="font-bold text-black text-sm md:text-base">
-                {student.name} ({student.enrollment})
+                {s.name} ({s.enrollment})
               </span>
               <br />
               <span className="text-gray-700 text-sm md:text-base">
-                {student.course} - {student.year}
+                {s.course} - {s.year}
               </span>
               <br />
               <span className={`font-semibold text-sm md:text-base ${
-                student.feesDue > 0 ? "text-red-600" : "text-green-600"
+                s.feesDue > 0 ? "text-red-600" : "text-green-600"
               }`}>
-                Fees Due: ₹{student.feesDue}
+                Fees Due: ₹{s.feesDue}
               </span>
             </li>
           ))}
