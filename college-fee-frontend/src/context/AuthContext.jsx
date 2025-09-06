@@ -4,16 +4,26 @@ import api from "../api/axios";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const res = await api.get("/auth/me"); // ✅ cookies sent automatically
-        setUser(res.data.user || null);
+        const res = await api.get("/auth/me");
+        if (res.data.user) {
+          setUser(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        } else {
+          setUser(null);
+          localStorage.removeItem("user");
+        }
       } catch {
         setUser(null);
+        localStorage.removeItem("user");
       } finally {
         setLoading(false);
       }
@@ -25,6 +35,7 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.post("/auth/login", { email, password });
       setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
       return res.data.user;
     } catch (err) {
       throw err;
@@ -35,6 +46,7 @@ export function AuthProvider({ children }) {
     try {
       await api.post("/auth/logout");
       setUser(null);
+      localStorage.removeItem("user");
     } catch (err) {
       console.error("Logout failed:", err);
     }
