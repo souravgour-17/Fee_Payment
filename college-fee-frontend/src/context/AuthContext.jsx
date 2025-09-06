@@ -11,24 +11,31 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const res = await api.get("/auth/me");
-        if (res.data.user) {
-          setUser(res.data.user);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-        } else {
+    // If user exists in localStorage, use it first
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setLoading(false);
+    } else {
+      const checkUser = async () => {
+        try {
+          const res = await api.get("/auth/me");
+          if (res.data.user) {
+            setUser(res.data.user);
+            localStorage.setItem("user", JSON.stringify(res.data.user));
+          } else {
+            setUser(null);
+            localStorage.removeItem("user");
+          }
+        } catch {
           setUser(null);
           localStorage.removeItem("user");
+        } finally {
+          setLoading(false);
         }
-      } catch {
-        setUser(null);
-        localStorage.removeItem("user");
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkUser();
+      };
+      checkUser();
+    }
   }, []);
 
   const login = async (email, password) => {

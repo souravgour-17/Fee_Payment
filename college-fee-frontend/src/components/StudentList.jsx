@@ -9,7 +9,7 @@ function StudentList() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const res = await api.get("/students");
+        const res = await api.get("/students"); // automatically uses VITE_API_URL
         const data = res.data;
         const studentList = Array.isArray(data) ? data : data.students || [];
         studentList.sort((a, b) =>
