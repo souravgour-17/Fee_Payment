@@ -1,120 +1,70 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-const logo = "/university-logo.png";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthPage() {
-  const { user, setUser } = useAuth();
-  const [isRegister, setIsRegister] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth(); // ✅ destructure login from context
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!email || !password || (isRegister && !confirmPassword)) {
-      setError("Please fill all fields");
-      return;
-    }
-
-    if (isRegister && password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+    setError(null);
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const endpoint = isRegister ? "/register" : "/login";
-
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth${endpoint}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, name: email }),
-          credentials: "include",
-        }
-      );
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Auth failed");
-
-      if (!isRegister) {
-        setUser(data.user);
-        navigate("/");
-      } else {
-        setIsRegister(false);
-      }
+      await login(email, password); // ✅ call login function
+      navigate("/"); // redirect to home after login
     } catch (err) {
-      setError(err.message);
+      console.error("Login failed:", err);
+      setError(err.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-black via-purple-900 to-black overflow-hidden">
-      <div className="relative w-full max-w-md h-[620px] rounded-2xl overflow-hidden shadow-2xl">
-        <div className="relative z-10 h-full p-6 sm:p-8">
-          <div className="w-full h-full rounded-2xl border border-white/20 bg-transparent px-6 py-6 flex flex-col">
-            <div className="flex flex-col items-center mb-6">
-              <img src={logo} alt="Logo" className="w-20 h-20 rounded-full mb-2 border border-white/30" />
-              <h1 className="text-2xl font-bold text-white">
-                {isRegister ? "Create Account" : "Welcome Back"}
-              </h1>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-md rounded-lg p-6 w-full max-w-sm"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
-            <div className="flex justify-around mb-6">
-              <button
-                onClick={() => {
-                  setIsRegister(false);
-                  setError("");
-                }}
-                className={`px-4 py-2 text-lg font-semibold transition ${
-                  !isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => {
-                  setIsRegister(true);
-                  setError("");
-                }}
-                className={`px-4 py-2 text-lg font-semibold transition ${
-                  isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
+        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
 
-            {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
+        <label className="block mb-2 font-semibold">Email</label>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          required
+        />
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input type="email" placeholder="Email" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <input type="password" placeholder="Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={password} onChange={(e) => setPassword(e.target.value)} />
-              {isRegister && (
-                <input type="password" placeholder="Confirm Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-              )}
-              <button type="submit" disabled={loading} className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50">
-                {loading ? "Please wait..." : isRegister ? "Create Account" : "Login"}
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
+        <label className="block mb-2 font-semibold">Password</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-2 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          required
+        />
+
+        <button
+          type="submit"
+          className={`w-full py-2 rounded text-white font-semibold ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+          }`}
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   );
 }
