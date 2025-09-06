@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {
   try {
-    let token = req.cookies?.token;
+    let token = req.cookies?.token; // first try cookie
 
-    // fallback: check Authorization header (Bearer token)
+    // fallback to Authorization header
     if (!token && req.headers.authorization) {
       const parts = req.headers.authorization.split(" ");
       if (parts.length === 2 && parts[0] === "Bearer") {
@@ -13,9 +13,7 @@ export const verifyToken = (req, res, next) => {
       }
     }
 
-    if (!token) {
-      return res.status(401).json({ error: "Authentication token missing" });
-    }
+    if (!token) return res.status(401).json({ error: "Authentication token missing" });
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
