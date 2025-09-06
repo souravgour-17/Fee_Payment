@@ -9,6 +9,12 @@ A modern **web application** for students of **Souravian University** to securel
 
 ---
 
+## 🌐 Demo
+
+Check out the live application here: [https://fee-payment-frontend.onrender.com](https://fee-payment-frontend.onrender.com)
+
+---
+
 ## ✨ Features
 
 - ✅ Student registration & login with **JWT authentication**  
@@ -18,6 +24,17 @@ A modern **web application** for students of **Souravian University** to securel
 - ✅ Admin panel to manage students & payments  
 - ✅ CRUD operations for students & fees  
 - ✅ Responsive design for desktop & mobile  
+
+---
+
+## 🔒 Authentication Flow
+
+- Students register or login using email/password.  
+- Upon login, a JWT token is generated and stored in the client (localStorage or cookies).  
+- **After logging in, you may need to refresh the page to load the next page correctly.**  
+- The token is sent with requests to access protected routes (like viewing payment history).  
+- Only authenticated users can access fee details and payment history.  
+- User data is saved securely in MongoDB.
 
 ---
 
@@ -94,8 +111,12 @@ Open a pull request
 
 📬 Contact
 Developer: Sourav Gour
+
 Email: souravgour798@gmail.com
+
 GitHub: souravgour-17
+
 LinkedIn: Sourav Gour
 
 Made with ❤️ using React, Node.js, MongoDB, and JWT authentication.
+

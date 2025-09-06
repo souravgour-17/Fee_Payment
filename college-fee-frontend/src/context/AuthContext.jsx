@@ -1,3 +1,4 @@
+// src/context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";
 
@@ -10,7 +11,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const res = await api.get("/auth/me"); 
+        // ✅ Send cookies along with request
+        const res = await api.get("/auth/me", { withCredentials: true });
         if (res.data.user) {
           setUser(res.data.user);
           localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -26,6 +28,7 @@ export function AuthProvider({ children }) {
       }
     };
 
+    // Check localStorage first
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -36,15 +39,24 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post("/auth/login", { email, password });
-    setUser(res.data.user);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    return res.data.user;
+    try {
+      const res = await api.post(
+        "/auth/login",
+        { email, password },
+        { withCredentials: true } // ✅ important for cookies
+      );
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      return res.data.user;
+    } catch (err) {
+      console.error("Login failed:", err.response?.data || err.message);
+      throw err;
+    }
   };
 
   const logout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/auth/logout", {}, { withCredentials: true });
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {
