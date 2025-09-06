@@ -5,6 +5,7 @@ export const verifyToken = (req, res, next) => {
   try {
     let token = req.cookies?.token;
 
+    // fallback: check Authorization header (Bearer token)
     if (!token && req.headers.authorization) {
       const parts = req.headers.authorization.split(" ");
       if (parts.length === 2 && parts[0] === "Bearer") {
