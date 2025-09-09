@@ -11,6 +11,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [friendlyMessage, setFriendlyMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -21,6 +22,7 @@ export default function AuthPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFriendlyMessage("");
 
     if (!email || !password || (isRegister && !confirmPassword)) {
       setError("Please fill all fields");
@@ -51,8 +53,14 @@ export default function AuthPage() {
       if (!res.ok) throw new Error(data.error || "Auth failed");
 
       if (!isRegister) {
-        setUser(data.user);
-        navigate("/");
+        if (typeof setUser === "function") {
+          setUser(data.user);
+          navigate("/"); // auto-navigation works if setUser exists
+        } else {
+          setFriendlyMessage(
+            `Hey ${data.user?.name || "there"}! I know you’re logging in. Just taking a little time, please refresh if needed.`
+          );
+        }
       } else {
         setIsRegister(false);
       }
@@ -69,7 +77,11 @@ export default function AuthPage() {
         <div className="relative z-10 h-full p-6 sm:p-8">
           <div className="w-full h-full rounded-2xl border border-white/20 bg-transparent px-6 py-6 flex flex-col">
             <div className="flex flex-col items-center mb-6">
-              <img src={logo} alt="Logo" className="w-20 h-20 rounded-full mb-2 border border-white/30" />
+              <img
+                src={logo}
+                alt="Logo"
+                className="w-20 h-20 rounded-full mb-2 border border-white/30"
+              />
               <h1 className="text-2xl font-bold text-white">
                 {isRegister ? "Create Account" : "Welcome Back"}
               </h1>
@@ -80,9 +92,12 @@ export default function AuthPage() {
                 onClick={() => {
                   setIsRegister(false);
                   setError("");
+                  setFriendlyMessage("");
                 }}
                 className={`px-4 py-2 text-lg font-semibold transition ${
-                  !isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
+                  !isRegister
+                    ? "text-white border-b-2 border-purple-400"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
                 Sign In
@@ -91,25 +106,76 @@ export default function AuthPage() {
                 onClick={() => {
                   setIsRegister(true);
                   setError("");
+                  setFriendlyMessage("");
                 }}
                 className={`px-4 py-2 text-lg font-semibold transition ${
-                  isRegister ? "text-white border-b-2 border-purple-400" : "text-gray-400 hover:text-white"
+                  isRegister
+                    ? "text-white border-b-2 border-purple-400"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
                 Sign Up
               </button>
             </div>
 
-            {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
+            {/* Friendly message */}
+            {friendlyMessage && (
+              <div className="flex flex-col items-center mb-4">
+                <p className="text-green-400 text-sm text-center">
+                  {friendlyMessage}
+                </p>
+                <button
+  onClick={() => {
+    navigate("/");       // navigate to home
+    window.location.reload(); // refresh the page
+  }}
+  className="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+>
+  Continue
+</button>
+
+              </div>
+            )}
+
+            {/* Error message */}
+            {error && (
+              <p className="text-red-400 text-sm mb-4 text-center">{error}</p>
+            )}
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input type="email" placeholder="Email" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={email} onChange={(e) => setEmail(e.target.value)} />
-              <input type="password" placeholder="Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                type="email"
+                placeholder="Email"
+                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
               {isRegister && (
-                <input type="password" placeholder="Confirm Password" className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
               )}
-              <button type="submit" disabled={loading} className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50">
-                {loading ? "Please wait..." : isRegister ? "Create Account" : "Login"}
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
+              >
+                {loading
+                  ? "Please wait..."
+                  : isRegister
+                  ? "Create Account"
+                  : "Login"}
               </button>
             </form>
           </div>
