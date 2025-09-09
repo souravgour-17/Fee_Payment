@@ -55,10 +55,10 @@ export default function AuthPage() {
       if (!isRegister) {
         if (typeof setUser === "function") {
           setUser(data.user);
-          navigate("/"); // auto-navigation works if setUser exists
+          navigate("/"); 
         } else {
           setFriendlyMessage(
-            `Hey ${data.user?.name || "there"}! I know you’re logging in. Just taking a little time, please refresh if needed.`
+            `Hey! I know you’re logging in. Just taking a little time, please refresh if needed.`
           );
         }
       } else {
