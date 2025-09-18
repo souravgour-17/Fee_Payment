@@ -2,10 +2,11 @@ import mongoose from "mongoose";
 
 const studentSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  enrollment: { type: String, required: true, unique: true },
-  department: { type: String, required: true },
-  feesPaid: { type: Number, default: 0 },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  otp: { type: String },
+  otpExpiry: { type: Date },
+  isVerified: { type: Boolean, default: false },  
 });
 
-const Student = mongoose.model("Student", studentSchema);
-export default Student;
+export default mongoose.model("Student", studentSchema);
