@@ -1,6 +1,8 @@
 import { HashRouter as Router, Routes, Route, NavLink, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import LetterGlitch from './components/LetterGlitch';
+
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -102,10 +104,17 @@ function Layout() {
 }
 
 export default function App() {
-  return (
+   return (
     <AuthProvider>
       <Router>
-        <Layout />
+        {/* Background for all pages */}
+        <LetterGlitch
+          glitchSpeed={50}
+          centerVignette={true}
+          outerVignette={false}
+          smooth={true}
+        />
+         <Layout />
       </Router>
     </AuthProvider>
   );

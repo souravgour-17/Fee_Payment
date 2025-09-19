@@ -67,7 +67,7 @@ export default function AuthPage() {
           password,
         });
 
-        setUser(res.data.user); // ✅ use backend response
+        setUser(res.data.user);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/");
       }
@@ -108,144 +108,137 @@ export default function AuthPage() {
   const handleEmailChange = (e) => setEmail(e.target.value.toLowerCase());
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-b from-black via-purple-900 to-black overflow-hidden">
-      <div className="relative w-full max-w-md min-h-[650px] rounded-2xl overflow-hidden shadow-2xl">
-        <div className="relative z-10 h-full p-6 sm:p-8">
-          <div className="w-full rounded-2xl border border-white/20 bg-transparent px-6 py-6 flex flex-col">
-            <div className="flex flex-col items-center mb-6">
-              <img
-                src={logo}
-                alt="Logo"
-                className="w-20 h-20 rounded-full mb-2 border border-white/30"
-              />
-              <h1 className="text-2xl font-bold text-white">
-                {otpSent
-                  ? "Verify OTP"
-                  : isRegister
-                  ? "Create Account"
-                  : "Welcome Back"}
-              </h1>
-            </div>
+    <div className="h-screen w-screen flex items-center justify-center overflow-hidden">
 
-            {error && (
-              <p className="text-red-400 text-sm mb-4 text-center">{error}</p>
-            )}
+      <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
+        <div className="backdrop-blur-md bg-white/20 rounded-2xl p-6 sm:p-8">
+          <div className="flex flex-col items-center mb-6">
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-20 h-20 rounded-full mb-2 border border-white/30"
+            />
+            <h1 className="text-2xl font-bold italic text-white text-center">
+              {otpSent ? "Verify OTP" : isRegister ? "Create Account" : "Welcome Back"}
+            </h1>
+          </div>
 
-            {!otpSent ? (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {isRegister && (
-                  <input
-                    type="text"
-                    placeholder="Full Name"
-                    className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                )}
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  value={email}
-                  onChange={handleEmailChange}
-                />
+          {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
 
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((s) => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
-                  >
-                    {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                  </button>
-                </div>
-
-                {isRegister && (
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm Password"
-                      className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword((s) => !s)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
-                    >
-                      {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
-                >
-                  {loading
-                    ? "Please wait..."
-                    : isRegister
-                    ? "Create Account"
-                    : "Login"}
-                </button>
-
-                <div className="flex justify-around mt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsRegister(false);
-                      setError("");
-                    }}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsRegister(true);
-                      setError("");
-                    }}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+          {!otpSent ? (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {isRegister && (
                 <input
                   type="text"
-                  placeholder="Enter OTP"
+                  placeholder="Full Name"
                   className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
+              )}
+              <input
+                type="email"
+                placeholder="Email"
+                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                value={email}
+                onChange={handleEmailChange}
+              />
 
-                <p className="text-gray-300 text-sm text-center">
-                  OTP expires in {Math.floor(otpTimer / 60)}:
-                  {String(otpTimer % 60).padStart(2, "0")}
-                </p>
-
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 <button
-                  type="submit"
-                  disabled={loading || otpTimer <= 0}
-                  className="mt-2 bg-green-600 text-white font-bold py-2 rounded-xl hover:bg-green-700 transition disabled:opacity-50"
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
                 >
-                  {loading ? "Verifying..." : "Verify OTP"}
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                 </button>
-              </form>
-            )}
-          </div>
+              </div>
+
+              {isRegister && (
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm Password"
+                    className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
+                  >
+                    {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  </button>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
+              >
+                {loading
+                  ? "Please wait..."
+                  : isRegister
+                  ? "Create Account"
+                  : "Login"}
+              </button>
+
+              <div className="flex justify-around mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(false);
+                    setError("");
+                  }}
+                  className="text-gray-400 hover:text-white"
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegister(true);
+                    setError("");
+                  }}
+                  className="text-gray-400 hover:text-white"
+                >
+                  Sign Up
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="Enter OTP"
+                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+              />
+
+              <p className="text-gray-300 text-sm text-center">
+                OTP expires in {Math.floor(otpTimer / 60)}:
+                {String(otpTimer % 60).padStart(2, "0")}
+              </p>
+
+              <button
+                type="submit"
+                disabled={loading || otpTimer <= 0}
+                className="mt-2 bg-green-600 text-white font-bold py-2 rounded-xl hover:bg-green-700 transition disabled:opacity-50"
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function PaymentHistory() {
   const [payments, setPayments] = useState([]);
@@ -22,57 +23,66 @@ export default function PaymentHistory() {
     fetchPayments();
   }, []);
 
-  if (loading)
-    return <p className="text-center mt-10 text-black">⏳ Loading payments...</p>;
-
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-4 text-center text-black">
-        💳 Payment History
-      </h2>
+    <div className="relative flex justify-center items-start min-h-screen py-10">
+      <motion.div
+        className="backdrop-blur-md bg-white/20 rounded-2xl shadow-xl p-8 w-full max-w-6xl mx-4 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center text-white italic">
+          💳 Payment History
+        </h2>
 
-      {payments.length === 0 ? (
-        <p className="text-center text-gray-500">No payments found.</p>
-      ) : (
-        <div className="overflow-x-auto shadow-lg rounded-lg">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-gray-100 border-b">
-              <tr>
-                <th className="px-4 py-2 text-left text-black">Transaction ID</th>
-                <th className="px-4 py-2 text-left text-black">Enrollment No</th>
-                <th className="px-4 py-2 text-left text-black">Name</th>
-                <th className="px-4 py-2 text-left text-black">Course</th>
-                <th className="px-4 py-2 text-left text-black">Amount</th>
-                <th className="px-4 py-2 text-left text-black">Method</th>
-                <th className="px-4 py-2 text-left text-black">Status</th>
-                <th className="px-4 py-2 text-left text-black">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p._id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2 text-black">{p.transactionId}</td>
-                  <td className="px-4 py-2 text-black">{p.studentId?.enrollmentNo}</td>
-                  <td className="px-4 py-2 text-black">{p.studentId?.name}</td>
-                  <td className="px-4 py-2 text-black">{p.studentId?.course}</td>
-                  <td className="px-4 py-2 font-semibold text-black">₹{p.amount}</td>
-                  <td className="px-4 py-2 text-black">{p.method}</td>
-                  <td
-                    className={`px-4 py-2 font-bold ${
-                      p.status === "Success" ? "text-green-600" : "text-red-600"
+        {loading ? (
+          <p className="text-center text-white">⏳ Loading payments...</p>
+        ) : payments.length === 0 ? (
+          <p className="text-center text-white">No payments found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full border border-white/40 text-center text-white">
+              <thead className="bg-white/10 border-b border-white/40">
+                <tr>
+                  <th className="px-4 py-2">Transaction ID</th>
+                  <th className="px-4 py-2">Enrollment No</th>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Course</th>
+                  <th className="px-4 py-2">Amount</th>
+                  <th className="px-4 py-2">Method</th>
+                  <th className="px-4 py-2">Status</th>
+                  <th className="px-4 py-2">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((p, i) => (
+                  <tr
+                    key={p._id}
+                    className={`border-b border-white/20 ${
+                      i % 2 === 0 ? "bg-white/10" : "bg-white/5"
                     }`}
                   >
-                    {p.status}
-                  </td>
-                  <td className="px-4 py-2 text-black">
-                    {new Date(p.createdAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    <td className="px-4 py-2">{p.transactionId}</td>
+                    <td className="px-4 py-2">{p.studentId?.enrollmentNo}</td>
+                    <td className="px-4 py-2">{p.studentId?.name}</td>
+                    <td className="px-4 py-2">{p.studentId?.course}</td>
+                    <td className="px-4 py-2 font-semibold">₹{p.amount}</td>
+                    <td className="px-4 py-2">{p.method}</td>
+                    <td
+                      className={`px-4 py-2 font-bold ${
+                        p.status === "Success" ? "text-green-400" : "text-red-400"
+                      }`}
+                    >
+                      {p.status}
+                    </td>
+                    <td className="px-4 py-2">{new Date(p.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }

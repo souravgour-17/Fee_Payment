@@ -77,65 +77,78 @@ export default function PaymentPortal() {
   };
 
   return (
-    <motion.div
-      className="p-6 text-black"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8 }}
-    >
-      <h1 className="text-3xl font-bold mb-6 text-white">💳 Payment Portal</h1>
+    <div className="relative flex justify-center items-start min-h-screen py-10 bg-transparent">
+      {/* Main Blur Box */}
+      <motion.div
+        className="backdrop-blur-md bg-white/20 rounded-2xl shadow-xl p-8 w-full max-w-lg mx-4 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h1 className="text-3xl font-bold mb-6 text-center text-white italic">
+          💳 Payment Portal
+        </h1>
 
-      <div className="flex gap-2 mb-6">
-        <motion.input
-          type="text"
-          placeholder="Enter Enrollment Number"
-          value={enrollment}
-          onChange={(e) => setEnrollment(e.target.value)}
-          className="border p-2 rounded w-64 text-black"
-        />
-        <motion.button
-          onClick={handleSearch}
-          className="bg-red-900 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Search
-        </motion.button>
-      </div>
+        {/* Enrollment Input */}
+        <div className="flex flex-col sm:flex-row gap-2 mb-6 justify-center">
+          <motion.input
+            type="text"
+            placeholder="Enter Enrollment Number"
+            value={enrollment}
+            onChange={(e) => setEnrollment(e.target.value)}
+            className="border p-2 rounded w-full sm:w-64 text-black"
+          />
+          <motion.button
+            onClick={handleSearch}
+            className="bg-red-900 text-white px-4 py-2 rounded hover:bg-red-700 mt-2 sm:mt-0"
+          >
+            Search
+          </motion.button>
+        </div>
 
-      <AnimatePresence>
-        {error && (
-          <motion.p className="text-red-600">{error}</motion.p>
-        )}
-      </AnimatePresence>
+        {/* Error Message */}
+        <AnimatePresence>
+          {error && (
+            <motion.p className="text-red-600 text-center mb-4">{error}</motion.p>
+          )}
+        </AnimatePresence>
 
-      <AnimatePresence>
-        {student && (
-          <motion.div className="p-4 border rounded-lg bg-white shadow space-y-4">
-            <h2 className="text-black font-bold">{student.name}</h2>
-            <p className="text-black"><strong>Enrollment:</strong> {student.enrollment}</p>
-            <p className="text-black"><strong>Course:</strong> {student.course || "N/A"}</p>
-            <p className="text-black"><strong>Year:</strong> {student.year || "N/A"}</p>
-            <p className="text-red-600 font-semibold">Fees Due: ₹{student.feesDue || 0}</p>
-            <p className="text-black"><strong>UPI ID:</strong> {student.upiId || "test@upi"}</p>
-
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                generateUpiLink()
-              )}`}
-              alt="UPI QR Code"
-              className="w-48 h-48 mx-auto"
-            />
-
-            <motion.button
-              onClick={handlePayment}
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 mt-4"
+        {/* Student Details in Blur Box */}
+        <AnimatePresence>
+          {student && (
+            <motion.div
+              className="p-4 rounded-xl bg-white/30 backdrop-blur-md shadow-md space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              Pay Now
-            </motion.button>
+              <h2 className="text-black font-bold text-center">{student.name}</h2>
+              <p className="text-black text-center"><strong>Enrollment:</strong> {student.enrollment}</p>
+              <p className="text-black text-center"><strong>Course:</strong> {student.course || "N/A"}</p>
+              <p className="text-black text-center"><strong>Year:</strong> {student.year || "N/A"}</p>
+              <p className="text-red-600 font-semibold text-center">Fees Due: ₹{student.feesDue || 0}</p>
+              <p className="text-black text-center"><strong>UPI ID:</strong> {student.upiId || "test@upi"}</p>
 
-            {status && <p className="mt-3 font-medium text-black">{status}</p>}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                  generateUpiLink()
+                )}`}
+                alt="UPI QR Code"
+                className="w-48 h-48 mx-auto"
+              />
+
+              <motion.button
+                onClick={handlePayment}
+                className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 block mx-auto mt-4"
+              >
+                Pay Now
+              </motion.button>
+
+              {status && <p className="mt-3 font-medium text-black text-center">{status}</p>}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }

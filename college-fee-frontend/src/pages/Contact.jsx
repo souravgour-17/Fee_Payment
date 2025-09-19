@@ -2,25 +2,33 @@ import { motion } from "framer-motion";
 
 export default function Contact() {
   return (
-    <motion.div
-      className="text-white max-w-3xl mx-auto"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
-      <h1 className="text-4xl font-bold mb-6">📞 Contact Us</h1>
+    <div className="relative flex justify-center items-start min-h-screen py-10">
+      <motion.div
+        className="backdrop-blur-md bg-white/20 rounded-2xl shadow-xl p-8 w-full max-w-3xl mx-4 text-center space-y-6"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h1 className="text-4xl font-bold italic text-white">📞 Contact Us</h1>
 
-      <div className="bg-black shadow rounded-lg p-6 space-y-4">
-        <p className="text-lg font-semibold">🏛️ Address:</p>
-        <p className="text-black-700">Souravian University, Jamshedpur, Jharkhand, India</p>
+        <div className="space-y-4 text-white/80">
+          <div>
+            <p className="text-lg font-semibold">🏛️ Address:</p>
+            <p>Souravian University, Jamshedpur, Jharkhand, India</p>
+          </div>
 
-        <p className="text-lg font-semibold">📱 Phone:</p>
-        <p className="text-white-700">+91-XXX-XXXX-XXX</p>
+          <div>
+            <p className="text-lg font-semibold">📱 Phone:</p>
+            <p>+91-XXX-XXXX-XXX</p>
+          </div>
 
-        <p className="text-lg font-semibold">✉️ Email:</p>
-        <p className="text-white-700">info@souravianuniversity.ac.in</p>
-      </div>
-    </motion.div>
+          <div>
+            <p className="text-lg font-semibold">✉️ Email:</p>
+            <p>info@souravianuniversity.ac.in</p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

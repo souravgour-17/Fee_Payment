@@ -5,12 +5,13 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // ✅ clear JWT
-    navigate("/login"); // ✅ redirect to login page
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
-    <div className="bg-gradient-to-b from-black via-purple-900 to-black text-white w-64 p-6 h-screen fixed top-0 left-0 shadow-xl flex flex-col">
+    <div className="w-64 p-6 h-screen fixed top-0 left-0 shadow-xl flex flex-col
+                    bg-white/10 backdrop-blur-lg text-white">
       {/* Title */}
       <div className="text-center mb-10">
         <h1 className="text-3xl font-extrabold tracking-wide">My Portal</h1>
@@ -32,7 +33,7 @@ export default function Sidebar() {
       {/* Footer / Logout */}
       <button
         onClick={handleLogout}
-        className="bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-semibold"
+        className="mt-auto bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 font-semibold"
       >
         <LogOut size={18} /> Logout
       </button>
@@ -49,7 +50,7 @@ function NavItem({ to, icon, label }) {
         `flex items-center gap-3 py-2 px-4 rounded-lg transition-all duration-200 ${
           isActive
             ? "bg-purple-800 font-semibold shadow-md"
-            : "hover:bg-purple-600/80"
+            : "hover:bg-white/20"
         }`
       }
     >

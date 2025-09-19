@@ -24,29 +24,34 @@ function StudentList() {
     fetchStudents();
   }, []);
 
-  if (loading) return <div className="p-6 text-center text-white">⏳ Loading students...</div>;
-  if (error) return <div className="p-6 text-center text-red-600">❌ {error}</div>;
+  if (loading) 
+    return <div className="p-6 text-left text-white">⏳ Loading students...</div>;
+  if (error) 
+    return <div className="p-6 text-left text-red-600">❌ {error}</div>;
 
   return (
-    <div className="p-4 md:p-6">
-      <h1 className="text-2xl md:text-3xl font-bold mb-4 text-white">🎓 Student List</h1>
+    <div className="p-6 flex flex-col items-start">
+      <h1 className="text-3xl font-bold mb-6 text-white">🎓 Student List</h1>
 
       {students.length === 0 ? (
         <p className="text-gray-300">No students found.</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4 w-full max-w-3xl">
           {students.map((s) => (
-            <li key={s.enrollment} className="p-4 md:p-6 border rounded-lg bg-white shadow">
-              <span className="font-bold text-black text-sm md:text-base">
+            <li 
+              key={s.enrollment} 
+              className="p-6 border rounded-2xl bg-white/10 backdrop-blur-lg shadow-lg"
+            >
+              <span className="font-bold text-white text-lg md:text-xl">
                 {s.name} ({s.enrollment})
               </span>
               <br />
-              <span className="text-gray-700 text-sm md:text-base">
+              <span className="text-gray-200 text-base md:text-lg">
                 {s.course} - {s.year}
               </span>
               <br />
-              <span className={`font-semibold text-sm md:text-base ${
-                s.feesDue > 0 ? "text-red-600" : "text-green-600"
+              <span className={`font-semibold text-base md:text-lg ${
+                s.feesDue > 0 ? "text-red-500" : "text-green-400"
               }`}>
                 Fees Due: ₹{s.feesDue}
               </span>

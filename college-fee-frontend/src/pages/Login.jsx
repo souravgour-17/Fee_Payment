@@ -20,19 +20,22 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="relative flex justify-center items-center min-h-screen">
+      {/* Background veil */}
+      <div className="absolute inset-0 veil-gradient veil-noise veil-vignette"></div>
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md flex flex-col gap-4 w-full max-w-md"
+        className="transparent-box w-full max-w-md flex flex-col gap-4"
       >
-        <h2 className="text-2xl font-bold text-center">Login</h2>
+        <h2 className="text-2xl font-bold text-center italic-text">Login</h2>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="border px-4 py-2 rounded"
+          className="border px-4 py-2 rounded bg-white/30 backdrop-blur-sm"
         />
         <input
           type="password"
@@ -40,7 +43,7 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="border px-4 py-2 rounded"
+          className="border px-4 py-2 rounded bg-white/30 backdrop-blur-sm"
         />
         <button
           type="submit"
