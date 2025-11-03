@@ -10,10 +10,10 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.log(err));
 
 const updatePassword = async () => {
-  const hashedPassword = await bcrypt.hash("1727", 10); // tumhara plain password
+  const hashedPassword = await bcrypt.hash("1727", 10); 
 
   const user = await User.findOneAndUpdate(
-    { email: "souravgour798@gmail.com" },
+    { email: "krunalgour@gmail.com" },
     { password: hashedPassword },
     { new: true }
   );

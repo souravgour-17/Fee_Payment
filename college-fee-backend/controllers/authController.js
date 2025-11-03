@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 let otpStore = {}; // temporary in-memory storage { email: { otp, expiresAt } }
 
@@ -24,7 +25,7 @@ export const register = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     // Save user temporarily as unverified
-    const newUser = new User({ name, email, password: hashed, isVerified: false });
+    const newUser = new User({ name, email, password: hashed, isVerified: false, role: "user" });
     await newUser.save();
 
     // Generate OTP
@@ -65,7 +66,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-// ✅ Login
+// ✅ Login (generate JWT)
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,7 +79,25 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    res.json({ message: "Login successful", user: { name: user.name, email: user.email } });
+    // 🔑 Create JWT token with role
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // Send token in cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.json({
+      message: "Login successful",
+      user: { name: user.name, email: user.email, role: user.role },
+    });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }

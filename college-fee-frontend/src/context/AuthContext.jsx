@@ -13,14 +13,11 @@ export function AuthProvider({ children }) {
         const res = await api.get("/auth/me", { withCredentials: true });
         if (res.data.user) {
           setUser(res.data.user);
-          localStorage.setItem("user", JSON.stringify(res.data.user));
         } else {
           setUser(null);
-          localStorage.removeItem("user");
         }
-      } catch {
+      } catch (err) {
         setUser(null);
-        localStorage.removeItem("user");
       } finally {
         setLoading(false);
       }
@@ -35,16 +32,24 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const loginUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
   const logout = async () => {
     try {
       await api.post("/auth/logout", {}, { withCredentials: true });
-    } catch {}
-    setUser(null);
-    localStorage.removeItem("user");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser: loginUser, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

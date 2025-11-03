@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEyeInvisible, AiOutlinePoweroff } from "react-icons/ai";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "../api/axios";
 
 const logo = "/university-logo.png";
@@ -9,6 +10,7 @@ const logo = "/university-logo.png";
 export default function AuthPage() {
   const { user, setUser } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
+  const [role, setRole] = useState("student"); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,11 +22,15 @@ export default function AuthPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpTimer, setOtpTimer] = useState(600);
+  const [showRoleOptions, setShowRoleOptions] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) navigate("/");
+    if (user) {
+      if (user.role === "admin") navigate("/admin-dashboard");
+      else navigate("/dashboard");
+    }
   }, [user, navigate]);
 
   useEffect(() => {
@@ -57,6 +63,7 @@ export default function AuthPage() {
           name,
           email: email.toLowerCase(),
           password,
+          role: "student",
         });
         setOtpSent(true);
         setOtpTimer(600);
@@ -65,11 +72,14 @@ export default function AuthPage() {
         const res = await api.post("/auth/login", {
           email: email.toLowerCase(),
           password,
+          role,
         });
 
         setUser(res.data.user);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/");
+
+        if (res.data.user.role === "admin") navigate("/admin-dashboard");
+        else navigate("/dashboard");
       }
     } catch (err) {
       setError(err.response?.data?.error || err.message);
@@ -107,11 +117,51 @@ export default function AuthPage() {
 
   const handleEmailChange = (e) => setEmail(e.target.value.toLowerCase());
 
+  const handleRoleSelect = (selectedRole) => {
+    setRole(selectedRole);
+    setShowRoleOptions(false);
+    if (selectedRole === "admin") setIsRegister(false);
+  };
+
   return (
     <div className="h-screen w-screen flex items-center justify-center overflow-hidden">
-
       <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl">
-        <div className="backdrop-blur-md bg-white/20 rounded-2xl p-6 sm:p-8">
+        <div className="backdrop-blur-md bg-white/20 rounded-2xl p-6 sm:p-8 relative">
+
+          {!isRegister && (
+            <button
+              onClick={() => setShowRoleOptions((s) => !s)}
+              className="absolute top-4 right-4 text-white text-2xl hover:text-yellow-400 transition"
+              title="Toggle Role"
+            >
+              <AiOutlinePoweroff />
+            </button>
+          )}
+
+          <AnimatePresence>
+            {showRoleOptions && !isRegister && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-14 right-4 bg-black/70 rounded p-2 flex flex-col text-white z-50"
+              >
+                <button
+                  onClick={() => handleRoleSelect("student")}
+                  className={`px-2 py-1 ${role === "student" ? "bg-purple-600 rounded" : ""}`}
+                >
+                  Student
+                </button>
+                <button
+                  onClick={() => handleRoleSelect("admin")}
+                  className={`px-2 py-1 mt-1 ${role === "admin" ? "bg-purple-600 rounded" : ""}`}
+                >
+                  Admin
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="flex flex-col items-center mb-6">
             <img
               src={logo}
@@ -119,103 +169,107 @@ export default function AuthPage() {
               className="w-20 h-20 rounded-full mb-2 border border-white/30"
             />
             <h1 className="text-2xl font-bold italic text-white text-center">
-              {otpSent ? "Verify OTP" : isRegister ? "Create Account" : "Welcome Back"}
+              {otpSent ? "Verify OTP" : isRegister ? "Create Account" : "Welcome"}
             </h1>
           </div>
 
           {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
 
-          {!otpSent ? (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {isRegister && (
+          <AnimatePresence mode="wait">
+            {!otpSent && (
+              <motion.form
+                key={role + isRegister}
+                onSubmit={handleSubmit}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                className="flex flex-col gap-4"
+              >
+                {isRegister && role === "student" && (
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                )}
+
                 <input
-                  type="text"
-                  placeholder="Full Name"
+                  type="email"
+                  placeholder="Email"
                   className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={email}
+                  onChange={handleEmailChange}
                 />
-              )}
-              <input
-                type="email"
-                placeholder="Email"
-                className="p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                value={email}
-                onChange={handleEmailChange}
-              />
 
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
-                >
-                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-                </button>
-              </div>
-
-              {isRegister && (
                 <div className="relative">
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm Password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
                     className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    onClick={() => setShowPassword((s) => !s)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
                   >
-                    {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                   </button>
                 </div>
-              )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
-              >
-                {loading
-                  ? "Please wait..."
-                  : isRegister
-                  ? "Create Account"
-                  : "Login"}
-              </button>
+                {isRegister && role === "student" && (
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Confirm Password"
+                      className="w-full p-3 rounded-xl bg-black/40 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400 pr-12"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((s) => !s)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xl text-gray-300 hover:text-white"
+                    >
+                      {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    </button>
+                  </div>
+                )}
 
-              <div className="flex justify-around mt-2">
                 <button
-                  type="button"
-                  onClick={() => {
-                    setIsRegister(false);
-                    setError("");
-                  }}
-                  className="text-gray-400 hover:text-white"
+                  type="submit"
+                  disabled={loading}
+                  className="mt-2 bg-purple-600 text-white font-bold py-2 rounded-xl hover:bg-purple-700 transition disabled:opacity-50"
                 >
-                  Sign In
+                  {loading ? "Please wait..." : isRegister && role === "student" ? "Create Account" : "Login"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsRegister(true);
-                    setError("");
-                  }}
-                  className="text-gray-400 hover:text-white"
-                >
-                  Sign Up
-                </button>
-              </div>
-            </form>
-          ) : (
+
+                {role === "student" && (
+                  <div className="flex justify-around mt-2">
+                    <button
+                      type="button"
+                      onClick={() => { setIsRegister(false); setError(""); }}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setIsRegister(true); setError(""); }}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      Sign Up
+                    </button>
+                  </div>
+                )}
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {otpSent && (
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
               <input
                 type="text"

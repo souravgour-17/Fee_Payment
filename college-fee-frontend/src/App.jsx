@@ -3,7 +3,6 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import LetterGlitch from './components/LetterGlitch';
 
-
 import Home from "./pages/Home";
 import About from "./pages/About";
 import FeeStructure from "./pages/FeeStructure";
@@ -12,6 +11,7 @@ import Contact from "./pages/Contact";
 import StudentList from "./components/StudentList";
 import PaymentHistory from "./pages/PaymentHistory";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard"; // NEW: Admin page
 
 import AuthPage from "./pages/AuthPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,9 +26,11 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
+        {/* Auth */}
         <Route path="/login" element={user ? <Navigate to="/" replace /> : <AuthPage />} />
         <Route path="/register" element={user ? <Navigate to="/" replace /> : <AuthPage />} />
 
+        {/* Student Routes */}
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
         <Route path="/fee-structure" element={<ProtectedRoute><FeeStructure /></ProtectedRoute>} />
@@ -38,7 +40,11 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
 
-        <Route path="*" element={user ? <Home /> : <AuthPage />} />
+        {/* Admin Routes */}
+        <Route path="/admin-dashboard" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+
+        {/* Fallback */}
+        <Route path="*" element={user ? (user.role === "admin" ? <Navigate to="/admin-dashboard" /> : <Navigate to="/" />) : <AuthPage />} />
       </Routes>
     </AnimatePresence>
   );
@@ -49,6 +55,23 @@ function Layout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   if (!user) return <AnimatedRoutes />;
+
+  // Sidebar links based on role
+  const links = user.role === "admin"
+    ? [
+        { to: "/admin-dashboard", label: "Admin Dashboard" },
+        { to: "/students", label: "All Students" },
+        { to: "/payment-history", label: "Payment History" },
+      ]
+    : [
+        { to: "/", label: "Home" },
+        { to: "/about", label: "About" },
+        { to: "/fee-structure", label: "Fee Structure" },
+        { to: "/payment-portal", label: "Payment Portal" },
+        { to: "/students", label: "All Students" },
+        { to: "/payment-history", label: "Payment History" },
+        { to: "/contact", label: "Contact" },
+      ];
 
   return (
     <div className="flex">
@@ -65,15 +88,7 @@ function Layout() {
         <span className="italic text-sm mb-6 md:block hidden">Fee Portal</span>
 
         <nav className="flex flex-col gap-3 flex-grow">
-          {[
-            { to: "/", label: "Home" },
-            { to: "/about", label: "About" },
-            { to: "/fee-structure", label: "Fee Structure" },
-            { to: "/payment-portal", label: "Payment Portal" },
-            { to: "/students", label: "All Students" },
-            { to: "/payment-history", label: "Payment History" },
-            { to: "/contact", label: "Contact" },
-          ].map((item) => (
+          {links.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -114,7 +129,7 @@ export default function App() {
           outerVignette={false}
           smooth={true}
         />
-         <Layout />
+        <Layout />
       </Router>
     </AuthProvider>
   );
