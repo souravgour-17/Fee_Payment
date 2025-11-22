@@ -2,25 +2,23 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Create transporter with full SMTP config
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // use TLS
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Gmail App Password
-  },
-  tls: {
-    rejectUnauthorized: false, // Required for Render
+    pass: process.env.EMAIL_PASS,
   },
 });
 
-// Test email
+transporter.verify((err, success) => {
+  if (err) console.log("SMTP Error:", err);
+  else console.log("SMTP is ready");
+});
+
 transporter.sendMail(
   {
     from: process.env.EMAIL_USER,
-    to: "your-email@gmail.com", // test email
+    to: "your-email@gmail.com",
     subject: "Test Mail",
     text: "Hello! This is a test email from Render.",
   },
