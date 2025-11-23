@@ -7,7 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendMail = async (to, subject, html) => {
   try {
     const data = await resend.emails.send({
-      from: "Fee Payment System <onboarding@resend.dev>",
+      from: "souravgour798@gmail.com",  // 🔥 Change done here
       to,
       subject,
       html,
