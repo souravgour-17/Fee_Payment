@@ -1,29 +1,26 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-transporter.verify((err, success) => {
-  if (err) console.log("SMTP Error:", err);
-  else console.log("SMTP is ready");
-});
+async function sendTestMail() {
+  try {
+    const response = await resend.emails.send({
+      from: "Fee Payment System <onboarding@resend.dev>",
+      to: process.env.EMAIL_USER,   // YOUR GMAIL
+      subject: "Fee Payment System - Test Mail",
+      html: `
+        <h2>Hello Sourav! 👋</h2>
+        <p>This is a test email sent using <strong>Resend</strong> from your localhost.</p>
+        <p>Your setup is working perfectly 🎉</p>
+      `,
+    });
 
-transporter.sendMail(
-  {
-    from: process.env.EMAIL_USER,
-    to: "your-email@gmail.com",
-    subject: "Test Mail",
-    text: "Hello! This is a test email from Render.",
-  },
-  (err, info) => {
-    if (err) console.error("Email error:", err);
-    else console.log("Email sent:", info.response);
+    console.log("Mail Sent Successfully:", response);
+  } catch (error) {
+    console.error("Error Sending Mail:", error);
   }
-);
+}
+
+sendTestMail();

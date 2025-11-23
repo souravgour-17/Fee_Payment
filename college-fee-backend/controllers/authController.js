@@ -1,44 +1,46 @@
 import User from "../models/User.js";
-import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendMail } from "../utils/sendMail.js"; // ⬅ Resend utility import
 
 let otpStore = {}; // temporary in-memory storage { email: { otp, expiresAt } }
 
-// ✅ transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-// ✅ Register (generate OTP & send mail)
+// =============================
+// REGISTER — Generate OTP & Send Mail
+// =============================
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ error: "Email already registered" });
+    if (existing)
+      return res.status(400).json({ error: "Email already registered" });
 
     const hashed = await bcrypt.hash(password, 10);
 
-    // Save user temporarily as unverified
-    const newUser = new User({ name, email, password: hashed, isVerified: false, role: "user" });
+    const newUser = new User({
+      name,
+      email,
+      password: hashed,
+      isVerified: false,
+      role: "user",
+    });
+
     await newUser.save();
 
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otpStore[email] = { otp, expiresAt: Date.now() + 10 * 60 * 1000 }; // valid 10 mins
+    otpStore[email] = {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    };
 
-    // Send mail
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Verify your email",
-      text: `Your OTP is ${otp}. It will expire in 10 minutes.`,
-    });
+    // Send mail via Resend
+    await sendMail(
+      email,
+      "Verify your email",
+      `<p>Your OTP is <b>${otp}</b>. It will expire in 10 minutes.</p>`
+    );
 
     res.json({ message: "OTP sent to your email" });
   } catch (err) {
@@ -47,15 +49,19 @@ export const register = async (req, res) => {
   }
 };
 
-// ✅ Verify OTP
+// =============================
+// VERIFY OTP
+// =============================
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
     const record = otpStore[email];
 
     if (!record) return res.status(400).json({ error: "No OTP requested" });
-    if (record.expiresAt < Date.now()) return res.status(400).json({ error: "OTP expired" });
-    if (record.otp !== otp) return res.status(400).json({ error: "Invalid OTP" });
+    if (record.expiresAt < Date.now())
+      return res.status(400).json({ error: "OTP expired" });
+    if (record.otp !== otp)
+      return res.status(400).json({ error: "Invalid OTP" });
 
     await User.findOneAndUpdate({ email }, { isVerified: true });
     delete otpStore[email];
@@ -66,7 +72,9 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-// ✅ Login (generate JWT)
+// =============================
+// LOGIN — JWT Token Send
+// =============================
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -74,29 +82,33 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ error: "User not found" });
 
-    if (!user.isVerified) return res.status(400).json({ error: "Email not verified" });
+    if (!user.isVerified)
+      return res.status(400).json({ error: "Email not verified" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
+    if (!isMatch)
+      return res.status(400).json({ error: "Invalid credentials" });
 
-    // 🔑 Create JWT token with role
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Send token in cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({
       message: "Login successful",
-      user: { name: user.name, email: user.email, role: user.role },
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
