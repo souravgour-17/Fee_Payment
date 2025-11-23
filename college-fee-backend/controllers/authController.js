@@ -1,9 +1,9 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { sendMail } from "../utils/sendMail.js"; // ⬅ Resend utility import
+import { sendMail } from "../utils/sendMail.js";
 
-let otpStore = {}; // temporary in-memory storage { email: { otp, expiresAt } }
+let otpStore = {}; // { email: { otp, expiresAt } }
 
 // =============================
 // REGISTER — Generate OTP & Send Mail
@@ -35,7 +35,7 @@ export const register = async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000,
     };
 
-    // Send mail via Resend
+    // Send mail
     await sendMail(
       email,
       "Verify your email",
@@ -73,7 +73,7 @@ export const verifyOtp = async (req, res) => {
 };
 
 // =============================
-// LOGIN — JWT Token Send
+// LOGIN — JWT Token
 // =============================
 export const login = async (req, res) => {
   try {

@@ -1,20 +1,27 @@
-import { Resend } from "resend";
-import dotenv from "dotenv";
-dotenv.config();
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import nodemailer from "nodemailer";
 
 export const sendMail = async (to, subject, html) => {
   try {
-    const data = await resend.emails.send({
-      from: "souravgour798@gmail.com",  // 🔥 Change done here
+    const transporter = nodemailer.createTransport({
+      host: process.env.BREVO_HOST,
+      port: process.env.BREVO_PORT,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_USER,
+        pass: process.env.BREVO_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Fee Payment System" <${process.env.BREVO_USER}>`,
       to,
       subject,
       html,
     });
 
-    console.log("Mail Sent:", data);
+    console.log("Mail Sent Successfully 🚀");
     return { success: true };
+
   } catch (error) {
     console.error("Mail Error:", error);
     return { success: false, error };
